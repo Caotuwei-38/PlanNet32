@@ -1,0 +1,30 @@
+name: Install and Run Playit.gg
+
+on: 
+  push:
+  workflow_dispatch:
+
+jobs:
+  playit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update package list
+        run: sudo apt update
+
+      - name: Install dependencies
+        run: sudo apt install -y curl gpg
+
+      - name: Add Playit.gg repository
+        run: |
+          curl -SsL https://playit-cloud.github.io/ppa/key.gpg | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/playit.gpg >/dev/null
+          echo "deb [signed-by=/etc/apt/trusted.gpg.d/playit.gpg] https://playit-cloud.github.io/ppa/data ./" | sudo tee /etc/apt/sources.list.d/playit-cloud.list
+          sudo apt update
+
+      - name: Install Playit.gg
+        run: sudo apt install -y playit
+
+      - name: Run Playit.gg and keep alive for 6 hours
+        run: |
+          playit &  # Chạy playit ở chế độ nền
+          sleep 21600  # 6 giờ = 21600 giây
+          
